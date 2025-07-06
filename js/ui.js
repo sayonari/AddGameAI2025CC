@@ -33,15 +33,35 @@ class UIManager {
         });
         
         // スコア登録ボタン
-        document.getElementById('submit-score-btn').addEventListener('click', () => {
+        document.getElementById('submit-score-btn').addEventListener('click', async () => {
             const name = document.getElementById('player-name').value.trim();
             if (name && window.game && window.rankingManager) {
+                const btn = document.getElementById('submit-score-btn');
+                btn.disabled = true;
+                btn.textContent = '登録中...';
+                
+                // ローカルランキングに追加
                 window.rankingManager.addScore(name, window.game.score);
+                
+                // オンラインランキングに送信
+                if (window.GAS_WEBAPP_URL) {
+                    try {
+                        await window.rankingManager.submitOnlineScore(name, window.game.score);
+                        this.showNotification('スコアをオンラインランキングに登録しました！', 'success');
+                    } catch (error) {
+                        console.error('オンライン登録エラー:', error);
+                        this.showNotification('オンライン登録に失敗しました（ローカルには保存されました）', 'error');
+                    }
+                }
+                
                 document.getElementById('name-input-container').style.display = 'none';
                 
                 // ランキング画面を表示
                 this.showScreen('ranking');
                 window.rankingManager.displayRankings();
+                
+                btn.disabled = false;
+                btn.textContent = '登録';
             }
         });
         

@@ -28,7 +28,8 @@ class RankingManager {
             name: name.substring(0, 10), // 最大10文字
             score: score,
             date: new Date().toISOString(),
-            combo: window.game?.maxCombo || 0
+            combo: window.game?.maxCombo || 0,
+            inputMethod: window.game?.inputMethod || 'keyboard' // 入力方法を記録
         };
         
         // スコアを追加してソート
@@ -71,10 +72,13 @@ class RankingManager {
             const date = new Date(entry.date);
             const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
             
+            const inputIcon = entry.inputMethod === 'touch' ? '📱' : '⌨️';
+            
             rankingEntry.innerHTML = `
                 <span class="rank">${index + 1}</span>
                 <span class="name">${this.escapeHtml(entry.name)}</span>
                 <span class="score">${entry.score}</span>
+                <span class="input-method" style="margin-left: 5px;">${inputIcon}</span>
                 <span class="combo" style="font-size: 0.8em; opacity: 0.7; margin-left: 10px;">C:${entry.combo}</span>
                 <span class="date" style="font-size: 0.8em; opacity: 0.5; margin-left: 10px;">${dateStr}</span>
             `;
@@ -86,19 +90,98 @@ class RankingManager {
         this.addRankingStyles();
     }
     
-    displayOnlineRankings() {
+    async displayOnlineRankings() {
         const rankingList = document.getElementById('ranking-list');
         rankingList.innerHTML = '<div class="loading">オンラインランキングを読み込み中...</div>';
         
-        // オンラインランキングの実装（仮）
-        setTimeout(() => {
+        try {
+            const rankings = await this.fetchOnlineRankings();
+            
+            if (rankings.length === 0) {
+                rankingList.innerHTML = '<div class="no-data">まだランキングがありません</div>';
+                return;
+            }
+            
+            rankingList.innerHTML = '';
+            rankings.forEach((entry, index) => {
+                const rankingEntry = document.createElement('div');
+                rankingEntry.className = 'ranking-entry';
+                
+                // 上位3位は特別な装飾
+                if (index < 3) {
+                    rankingEntry.classList.add(`rank-${index + 1}`);
+                }
+                
+                const date = new Date(entry.date);
+                const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                const inputIcon = entry.inputMethod === 'touch' ? '📱' : '⌨️';
+                
+                rankingEntry.innerHTML = `
+                    <span class="rank">${index + 1}</span>
+                    <span class="name">${this.escapeHtml(entry.name)}</span>
+                    <span class="score">${entry.score}</span>
+                    <span class="input-method" style="margin-left: 5px;">${inputIcon}</span>
+                    <span class="combo" style="font-size: 0.8em; opacity: 0.7; margin-left: 10px;">C:${entry.combo}</span>
+                    <span class="date" style="font-size: 0.8em; opacity: 0.5; margin-left: 10px;">${dateStr}</span>
+                `;
+                
+                rankingList.appendChild(rankingEntry);
+            });
+            
+            // 上位ランキング用の特別なスタイルを追加
+            this.addRankingStyles();
+            
+        } catch (error) {
+            console.error('オンラインランキング取得エラー:', error);
             rankingList.innerHTML = `
                 <div class="no-data">
-                    オンラインランキングは準備中です<br>
-                    <small>今後のアップデートで実装予定</small>
+                    オンラインランキングの読み込みに失敗しました<br>
+                    <small>しばらくしてから再度お試しください</small>
                 </div>
             `;
-        }, 1000);
+        }
+    }
+    
+    async fetchOnlineRankings() {
+        const GAS_URL = window.GAS_WEBAPP_URL; // index.htmlで設定
+        if (!GAS_URL) {
+            throw new Error('GAS URLが設定されていません');
+        }
+        
+        const response = await fetch(`${GAS_URL}?action=getRankings`);
+        const data = await response.json();
+        
+        if (data.success) {
+            return data.rankings;
+        } else {
+            throw new Error(data.error || 'Unknown error');
+        }
+    }
+    
+    async submitOnlineScore(name, score) {
+        const GAS_URL = window.GAS_WEBAPP_URL;
+        if (!GAS_URL) {
+            console.error('GAS URLが設定されていません');
+            return false;
+        }
+        
+        try {
+            const params = new URLSearchParams({
+                action: 'addScore',
+                name: name,
+                score: score,
+                combo: window.game?.maxCombo || 0,
+                inputMethod: window.game?.inputMethod || 'keyboard'
+            });
+            
+            const response = await fetch(`${GAS_URL}?${params.toString()}`);
+            const data = await response.json();
+            
+            return data.success;
+        } catch (error) {
+            console.error('オンラインスコア送信エラー:', error);
+            return false;
+        }
     }
     
     escapeHtml(text) {
@@ -178,7 +261,8 @@ class RankingManager {
                 name: names[i],
                 score: Math.floor(Math.random() * 1000) + 100,
                 date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-                combo: Math.floor(Math.random() * 20) + 5
+                combo: Math.floor(Math.random() * 20) + 5,
+                inputMethod: Math.random() > 0.5 ? 'touch' : 'keyboard'
             });
         }
         

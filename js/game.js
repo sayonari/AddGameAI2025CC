@@ -12,6 +12,7 @@ class Game {
         this.comboTimer = null;
         this.lastAnswerTime = Date.now();
         this.comboTimeLeft = 0;
+        this.inputMethod = 'keyboard'; // 'keyboard' or 'touch'
         
         this.init();
     }
@@ -36,6 +37,7 @@ class Game {
         document.querySelectorAll('.numpad-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 if (this.isPlaying) {
+                    this.inputMethod = 'touch'; // タッチ操作を記録
                     const value = parseInt(e.target.dataset.value);
                     this.checkAnswer(value);
                     btn.classList.add('pressed');
@@ -47,6 +49,7 @@ class Game {
         // キーボード入力
         document.addEventListener('keydown', (e) => {
             if (this.isPlaying && e.key >= '0' && e.key <= '9') {
+                this.inputMethod = 'keyboard'; // キーボード操作を記録
                 const value = parseInt(e.key);
                 this.checkAnswer(value);
                 const btn = document.querySelector(`[data-value="${value}"]`);
