@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>足し算コンボゲーム</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- ゲーム画面 -->
+        <div id="game-screen" class="screen active">
+            <!-- ステータスバー -->
+            <div id="status-bar">
+                <div id="score-display">
+                    <span class="label">スコア</span>
+                    <span id="score">0</span>
+                </div>
+                <div id="timer-display">
+                    <span class="label">残り時間</span>
+                    <span id="time">30</span>
+                    <div id="timer-bar">
+                        <div id="timer-fill"></div>
+                    </div>
+                </div>
+                <div id="combo-display">
+                    <span class="label">コンボ</span>
+                    <span id="combo">0</span>
+                    <div id="combo-timer">
+                        <div id="combo-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 最大コンボ表示 -->
+            <div id="max-combo-display">
+                <span class="label">最大コンボ</span>
+                <span id="max-combo-value">0</span>
+            </div>
+
+            <!-- 数字表示エリア -->
+            <div id="numbers-container">
+                <div class="number-slot" id="num1">
+                    <span class="number">0</span>
+                </div>
+                <div class="operator">+</div>
+                <div class="number-slot" id="num2">
+                    <span class="number">0</span>
+                </div>
+                <div class="equals">=</div>
+                <div class="answer-container">
+                    <span class="tens-digit" id="tens-digit"></span>
+                    <div class="number-slot answer" id="answer">
+                        <span class="number">?</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 残りの数字プレビュー -->
+            <div id="preview-numbers">
+                <div class="preview-number" id="preview1">
+                    <span class="number">0</span>
+                </div>
+                <div class="preview-number" id="preview2">
+                    <span class="number">0</span>
+                </div>
+            </div>
+
+            <!-- テンキー -->
+            <div id="numpad">
+                <button class="numpad-btn" data-value="7">7</button>
+                <button class="numpad-btn" data-value="8">8</button>
+                <button class="numpad-btn" data-value="9">9</button>
+                <button class="numpad-btn" data-value="4">4</button>
+                <button class="numpad-btn" data-value="5">5</button>
+                <button class="numpad-btn" data-value="6">6</button>
+                <button class="numpad-btn" data-value="1">1</button>
+                <button class="numpad-btn" data-value="2">2</button>
+                <button class="numpad-btn" data-value="3">3</button>
+                <button class="numpad-btn zero" data-value="0">0</button>
+            </div>
+
+            <!-- エフェクトレイヤー -->
+            <div id="effect-layer"></div>
+        </div>
+
+        <!-- スタート画面 -->
+        <div id="start-screen" class="screen">
+            <h1>足し算<br>コンボゲーム</h1>
+            <div class="game-description">
+                <p>左の2つの数字を足して、答えの下一桁を入力！</p>
+                <p>連続正解でコンボボーナス！</p>
+                <p>制限時間は30秒</p>
+            </div>
+            <button id="start-btn" class="main-btn">ゲームスタート</button>
+            <button id="ranking-btn" class="main-btn">ランキング</button>
+        </div>
+
+        <!-- ゲーム終了画面 -->
+        <div id="end-screen" class="screen">
+            <h2>ゲーム終了！</h2>
+            <div id="final-score-display">
+                <p class="score-label">最終スコア</p>
+                <p id="final-score" class="score-value">0</p>
+            </div>
+            <div id="score-details">
+                <p>最大コンボ: <span id="max-combo">0</span></p>
+                <p>正解数: <span id="correct-count">0</span></p>
+            </div>
+            <div id="name-input-container" style="display: none;">
+                <p>ランキングに登録！</p>
+                <input type="text" id="player-name" placeholder="名前を入力" maxlength="10">
+                <button id="submit-score-btn" class="main-btn">登録</button>
+            </div>
+            <button id="retry-btn" class="main-btn">もう一度</button>
+            <button id="back-to-start-btn" class="main-btn">スタート画面へ</button>
+        </div>
+
+        <!-- ランキング画面 -->
+        <div id="ranking-screen" class="screen">
+            <h2>ランキング</h2>
+            <div id="ranking-tabs">
+                <button class="tab-btn active" data-tab="local">ローカル</button>
+                <button class="tab-btn" data-tab="online">オンライン</button>
+            </div>
+            <div id="ranking-list">
+                <div class="ranking-entry">
+                    <span class="rank">1</span>
+                    <span class="name">---</span>
+                    <span class="score">0</span>
+                </div>
+            </div>
+            <button id="back-from-ranking-btn" class="main-btn">戻る</button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/combo.js"></script>
+    <script src="js/ranking.js"></script>
+    <script src="js/sound.js"></script>
+</body>
+</html>

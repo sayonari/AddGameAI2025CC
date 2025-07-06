@@ -1,0 +1,432 @@
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+@keyframes slideFromRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes correctPulse {
+    0% {
+        transform: scale(1);
+        background: rgba(255,255,255,0.2);
+    }
+    50% {
+        transform: scale(1.2);
+        background: rgba(76, 217, 100, 0.5);
+        box-shadow: 0 0 30px rgba(76, 217, 100, 0.8);
+    }
+    100% {
+        transform: scale(1);
+        background: rgba(255,255,255,0.2);
+    }
+}
+
+@keyframes incorrectShake {
+    0%, 100% {
+        transform: translateX(0);
+        background: rgba(255,255,255,0.2);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+        background: rgba(239, 68, 68, 0.5);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+        background: rgba(239, 68, 68, 0.5);
+    }
+}
+
+@keyframes comboGlow {
+    0% {
+        box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.8),
+                    0 0 40px rgba(251, 191, 36, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    }
+}
+
+@keyframes numberPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes particleFly {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--x), var(--y)) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes timeWarning {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+}
+
+@keyframes timeCritical {
+    0%, 100% {
+        transform: scale(1);
+        background: rgba(239, 68, 68, 0.3);
+    }
+    50% {
+        transform: scale(1.1);
+        background: rgba(239, 68, 68, 0.5);
+    }
+}
+
+/* エフェクトクラス */
+.slide-out {
+    animation: slideLeft 0.3s ease-out forwards;
+}
+
+.slide-in {
+    animation: slideFromRight 0.3s ease-out;
+}
+
+.becoming-active {
+    background: rgba(255,255,255,0.25) !important;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* 新しいシンプルなアニメーション */
+.slide-left-out {
+    animation: simpleSlideLeftOut 0.5s ease-out forwards;
+}
+
+@keyframes simpleSlideLeftOut {
+    to {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+.slide-left {
+    animation: simpleSlideLeft 0.5s ease-out forwards;
+}
+
+@keyframes simpleSlideLeft {
+    to {
+        transform: translateX(-100px);
+    }
+}
+
+.slide-left-to-num1 {
+    animation: slideLeftToNum1 0.5s ease-out forwards;
+    z-index: 2;
+}
+
+@keyframes slideLeftToNum1 {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    99% {
+        transform: translateX(-100px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+.slide-up-and-scale {
+    animation: slideUpAndScale 0.5s ease-out forwards;
+    transform-origin: left center;
+}
+
+@keyframes slideUpAndScale {
+    from {
+        transform: translateY(0) scale(1);
+        background: rgba(255,255,255,0.1);
+    }
+    to {
+        transform: translateY(-120px) scale(1.6);
+        background: rgba(255,255,255,0.2);
+        box-shadow: 0 0 20px rgba(255,255,255,0.4);
+    }
+}
+
+.slide-left-preview {
+    animation: simpleSlideLeftPreview 0.5s ease-out forwards;
+}
+
+@keyframes simpleSlideLeftPreview {
+    to {
+        transform: translateX(-60px);
+    }
+}
+
+.fade-in {
+    animation: simpleFadeIn 0.3s ease-out;
+}
+
+@keyframes simpleFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 新しいスライドアニメーション */
+.slide-out-left {
+    animation: slideOutLeft 0.4s ease-out forwards;
+}
+
+@keyframes slideOutLeft {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-150px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* ゆるやかなスライドアウト */
+@keyframes gentleSlideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+.slide-to-left {
+    animation: slideToLeft 0.4s ease-out forwards;
+}
+
+@keyframes slideToLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-90px);
+    }
+}
+
+.preview-to-active {
+    animation: previewToActive 0.4s ease-out forwards;
+}
+
+@keyframes previewToActive {
+    0% {
+        transform: translateX(0) scale(1);
+        background: rgba(255,255,255,0.1);
+        width: 50px;
+        height: 50px;
+        font-size: 1.5em;
+        border-radius: 10px;
+    }
+    50% {
+        background: rgba(255,255,255,0.2);
+    }
+    100% {
+        transform: translateX(-90px) scale(1.6);
+        background: rgba(255,255,255,0.2);
+        width: 80px;
+        height: 80px;
+        font-size: 3em;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255,255,255,0.4);
+    }
+}
+
+/* スライド時のキラキラエフェクト */
+@keyframes sparkle {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+.sparkle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+}
+
+.sparkle::before,
+.sparkle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+    animation: sparkle 0.6s ease-out forwards;
+}
+
+.sparkle::after {
+    transform: rotate(90deg);
+}
+
+.correct-effect {
+    animation: correctPulse 0.5s ease;
+}
+
+.incorrect-effect {
+    animation: incorrectShake 0.5s ease;
+}
+
+.combo-active {
+    animation: comboGlow 1s ease infinite;
+}
+
+.number-appear {
+    animation: numberPop 0.3s ease;
+}
+
+.time-warning {
+    animation: timeWarning 1s ease infinite;
+}
+
+.time-critical {
+    animation: timeCritical 0.5s ease infinite;
+}
+
+/* パーティクルエフェクト */
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #4ade80;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFly 1s ease-out forwards;
+}
+
+.particle.error {
+    background: #ef4444;
+}
+
+/* スコアポップアップ */
+.score-popup {
+    position: absolute;
+    font-size: 2em;
+    font-weight: bold;
+    color: #4ade80;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    animation: scoreFloat 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes scoreFloat {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(-30px) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-60px) scale(1);
+        opacity: 0;
+    }
+}
+
+.score-popup.negative {
+    color: #ef4444;
+}
+
+/* コンボエフェクト */
+.combo-burst {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    border: 3px solid #fbbf24;
+    animation: comboBurst 0.6s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes comboBurst {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* ボタンプレスエフェクト */
+.numpad-btn.pressed {
+    animation: buttonPress 0.2s ease;
+}
+
+@keyframes buttonPress {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.9);
+        background: rgba(255,255,255,0.4);
+    }
+}
