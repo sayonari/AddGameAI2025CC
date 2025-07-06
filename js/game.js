@@ -279,21 +279,23 @@ class Game {
     showSlideEffect() {
         const num2 = document.getElementById('num2');
         const rect = num2.getBoundingClientRect();
+        const effectLayer = document.getElementById('effect-layer');
+        const effectRect = effectLayer.getBoundingClientRect();
         
         // パーティクルエフェクト
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.left = (rect.left + rect.width/2) + 'px';
-                particle.style.top = (rect.top + rect.height/2) + 'px';
+                particle.style.left = (rect.left - effectRect.left + rect.width/2) + 'px';
+                particle.style.top = (rect.top - effectRect.top + rect.height/2) + 'px';
                 
                 const angle = (Math.PI * 2 * i) / 3;
                 const distance = 30;
                 particle.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
                 particle.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
                 
-                document.getElementById('effect-layer').appendChild(particle);
+                effectLayer.appendChild(particle);
                 setTimeout(() => particle.remove(), 600);
             }, i * 50);
         }
@@ -416,6 +418,7 @@ class Game {
     createParticles(element, isError) {
         const rect = element.getBoundingClientRect();
         const effectLayer = document.getElementById('effect-layer');
+        const effectRect = effectLayer.getBoundingClientRect();
         
         for (let i = 0; i < 10; i++) {
             const particle = document.createElement('div');
@@ -427,8 +430,8 @@ class Game {
             particle.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
             particle.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
             
-            particle.style.left = rect.left + rect.width / 2 + 'px';
-            particle.style.top = rect.top + rect.height / 2 + 'px';
+            particle.style.left = (rect.left - effectRect.left + rect.width / 2) + 'px';
+            particle.style.top = (rect.top - effectRect.top + rect.height / 2) + 'px';
             
             effectLayer.appendChild(particle);
             

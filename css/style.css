@@ -174,12 +174,13 @@ body {
     align-items: center;
     margin: 0 10px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .number-slot .number {
     font-weight: bold;
     z-index: 1;
+    position: relative;
 }
 
 .operator, .equals {
@@ -405,6 +406,7 @@ body {
     .number-slot {
         width: 60px;
         height: 60px;
+        margin: 0 5px;
     }
     
     .tens-digit {
