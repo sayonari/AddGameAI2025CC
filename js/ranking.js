@@ -165,17 +165,38 @@ class RankingManager {
             return false;
         }
         
+        // 追加の検証
+        const config = window.GAME_CONFIG || {};
+        if (score > config.MAX_SCORE || score < 0) {
+            console.error('無効なスコア');
+            return false;
+        }
+        
+        // レート制限チェック
+        const lastSubmit = this.lastSubmitTime || 0;
+        const now = Date.now();
+        if (now - lastSubmit < (config.MIN_SUBMIT_INTERVAL || 30000)) {
+            console.error('送信間隔が短すぎます');
+            return false;
+        }
+        
         try {
             const params = new URLSearchParams({
                 action: 'addScore',
                 name: name,
                 score: score,
-                combo: window.game?.maxCombo || 0,
-                inputMethod: window.game?.inputMethod || 'keyboard'
+                combo: Math.min(window.game?.maxCombo || 0, config.MAX_COMBO || 100),
+                inputMethod: window.game?.inputMethod || 'keyboard',
+                version: config.VERSION || '1.0.0',
+                timestamp: now
             });
             
             const response = await fetch(`${GAS_URL}?${params.toString()}`);
             const data = await response.json();
+            
+            if (data.success) {
+                this.lastSubmitTime = now;
+            }
             
             return data.success;
         } catch (error) {

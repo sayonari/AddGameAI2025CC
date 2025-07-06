@@ -15,6 +15,21 @@ function handleRequest(e) {
   const output = ContentService.createTextOutput();
   output.setMimeType(ContentService.MimeType.JSON);
   
+  // リファラーチェック（オプション）
+  const referer = e.parameter.referer || '';
+  const allowedDomains = [
+    'sayonari.github.io',
+    'localhost',
+    '127.0.0.1'
+  ];
+  
+  // 基本的な検証
+  const isAllowed = allowedDomains.some(domain => referer.includes(domain));
+  if (!isAllowed && referer !== '') {
+    // 本番環境ではリファラーチェックを有効化
+    // return createResponse({success: false, error: 'Unauthorized domain'});
+  }
+  
   try {
     const action = e.parameter.action;
     
@@ -30,11 +45,36 @@ function handleRequest(e) {
       const combo = parseInt(e.parameter.combo);
       const inputMethod = e.parameter.inputMethod || 'keyboard';
       
-      if (!name || isNaN(score)) {
+      // 検証を強化
+      if (!name || isNaN(score) || score < 0 || score > 1000000) {
         return createResponse({success: false, error: 'Invalid parameters'});
       }
       
-      addScore(sheet, name, score, combo, inputMethod);
+      // コンボの検証
+      if (isNaN(combo) || combo < 0 || combo > 100) {
+        return createResponse({success: false, error: 'Invalid combo'});
+      }
+      
+      // 名前の検証（XSS対策）
+      const sanitizedName = name.replace(/[<>\"'&]/g, '').substring(0, 10);
+      
+      // バージョンチェック（オプション）
+      const version = e.parameter.version || '1.0.0';
+      
+      // タイムスタンプチェック（5分以内のリクエストのみ受け付け）
+      const timestamp = parseInt(e.parameter.timestamp || '0');
+      const now = Date.now();
+      if (Math.abs(now - timestamp) > 300000) { // 5分
+        return createResponse({success: false, error: 'Request timeout'});
+      }
+      
+      // レート制限（同じ名前で短時間に大量投稿を防ぐ）
+      const recentEntries = getRecentEntriesByName(sheet, sanitizedName, 30000); // 30秒以内
+      if (recentEntries.length >= 1) {
+        return createResponse({success: false, error: 'Too many submissions. Please wait.'});
+      }
+      
+      addScore(sheet, sanitizedName, score, combo, inputMethod);
       const rankings = getRankings(sheet);
       
       return createResponse({success: true, rankings: rankings});
@@ -99,6 +139,24 @@ function createResponse(data) {
   const output = ContentService.createTextOutput(JSON.stringify(data));
   output.setMimeType(ContentService.MimeType.JSON);
   return output;
+}
+
+// レート制限用の関数
+function getRecentEntriesByName(sheet, name, timeWindowMs) {
+  const data = sheet.getDataRange().getValues();
+  const now = new Date().getTime();
+  const recentEntries = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === name && data[i][4]) {
+      const entryTime = new Date(data[i][4]).getTime();
+      if (now - entryTime < timeWindowMs) {
+        recentEntries.push(data[i]);
+      }
+    }
+  }
+  
+  return recentEntries;
 }
 
 // 初期設定用関数（一度だけ実行）

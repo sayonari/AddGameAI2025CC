@@ -1,0 +1,5 @@
+// config.js.example
+// このファイルをconfig.jsとしてコピーし、実際のURLを設定してください
+// config.jsはgitignoreに追加してください
+
+window.GAS_WEBAPP_URL = 'YOUR_GAS_WEBAPP_URL_HERE';

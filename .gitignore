@@ -29,3 +29,6 @@ logs
 *.tmp
 *.temp
 .cache/
+
+# Configuration files
+# config.jsは公開用に難読化済みのため、gitignoreから除外
