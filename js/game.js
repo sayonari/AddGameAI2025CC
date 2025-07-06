@@ -535,11 +535,24 @@ class Game {
         
         if (window.rankingManager && window.rankingManager.isHighScore(this.score)) {
             document.getElementById('name-input-container').style.display = 'block';
-            // 名前入力フィールドをクリア
-            document.getElementById('player-name').value = '';
+            
+            // 保存された名前があれば自動入力
+            const nameInput = document.getElementById('player-name');
+            if (window.playerManager && window.playerManager.hasName()) {
+                nameInput.value = window.playerManager.getName();
+                nameInput.placeholder = '現在: ' + window.playerManager.getName();
+            } else {
+                nameInput.value = '';
+                nameInput.placeholder = '名前を入力';
+            }
+            
             // フォーカスを当てる（実績通知の後に）
             setTimeout(() => {
-                document.getElementById('player-name').focus();
+                nameInput.focus();
+                // 保存された名前がある場合は全選択
+                if (nameInput.value) {
+                    nameInput.select();
+                }
             }, (newAchievements.length + (challengeCompleted ? 1 : 0)) * 1000 + 1000);
         } else {
             document.getElementById('name-input-container').style.display = 'none';

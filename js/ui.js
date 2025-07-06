@@ -45,7 +45,13 @@ class UIManager {
         
         // スコア登録ボタン
         document.getElementById('submit-score-btn').addEventListener('click', async () => {
-            const name = document.getElementById('player-name').value.trim();
+            let name = document.getElementById('player-name').value.trim();
+            
+            // 名前が入力されていない場合は、保存された名前を使用
+            if (!name && window.playerManager && window.playerManager.hasName()) {
+                name = window.playerManager.getName();
+            }
+            
             if (name && window.game && window.rankingManager) {
                 const btn = document.getElementById('submit-score-btn');
                 btn.disabled = true;
@@ -53,6 +59,11 @@ class UIManager {
                 
                 // ローカルランキングに追加
                 window.rankingManager.addScore(name, window.game.score);
+                
+                // 名前を保存（まだ保存されていない場合）
+                if (window.playerManager && !window.playerManager.hasName()) {
+                    window.playerManager.saveName(name);
+                }
                 
                 // オンラインランキングに送信（エラーが発生しても続行）
                 if (window.GAS_WEBAPP_URL) {

@@ -63,6 +63,39 @@ body {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
+#player-name-setup {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#player-name-input {
+    padding: 10px 15px;
+    font-size: 1.1em;
+    border-radius: 10px;
+    border: none;
+    width: 200px;
+    text-align: center;
+}
+
+.mini-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mini-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
 .game-description {
     background: rgba(255,255,255,0.1);
     padding: 20px;
