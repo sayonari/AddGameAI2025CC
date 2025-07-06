@@ -7,10 +7,10 @@ class AchievementSystem {
             { id: 'combo_20', name: 'コンボキング', description: '20回連続正解', icon: '👑', condition: (stats) => stats.maxCombo >= 20 },
             
             // スコア実績
-            { id: 'score_300', name: 'ビギナー', description: 'スコア300点達成', icon: '🌱', condition: (stats) => stats.highScore >= 300 },
-            { id: 'score_600', name: 'アドバンス', description: 'スコア600点達成', icon: '🌟', condition: (stats) => stats.highScore >= 600 },
-            { id: 'score_1000', name: 'エキスパート', description: 'スコア1000点達成', icon: '💎', condition: (stats) => stats.highScore >= 1000 },
-            { id: 'score_2000', name: 'レジェンド', description: 'スコア2000点達成', icon: '🏆', condition: (stats) => stats.highScore >= 2000 },
+            { id: 'score_500', name: 'ビギナー', description: 'スコア500点達成', icon: '🌱', condition: (stats) => stats.highScore >= 500 },
+            { id: 'score_1000', name: 'アドバンス', description: 'スコア1000点達成', icon: '🌟', condition: (stats) => stats.highScore >= 1000 },
+            { id: 'score_2000', name: 'エキスパート', description: 'スコア2000点達成', icon: '💎', condition: (stats) => stats.highScore >= 2000 },
+            { id: 'score_3000', name: 'レジェンド', description: 'スコア3000点達成', icon: '🏆', condition: (stats) => stats.highScore >= 3000 },
             
             // プレイ回数実績
             { id: 'play_10', name: '常連さん', description: '10回プレイ', icon: '🎮', condition: (stats) => stats.totalGames >= 10 },

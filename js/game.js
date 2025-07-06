@@ -519,18 +519,28 @@ class Game {
         }
         
         // デイリーチャレンジをチェック
+        let challengeCompleted = false;
         if (window.dailyChallenge) {
             const challengeResult = window.dailyChallenge.checkChallenge(this.score);
             if (challengeResult.completed && challengeResult.firstTime) {
+                challengeCompleted = true;
                 setTimeout(() => {
                     this.showChallengeCompleteNotification(challengeResult.challenge);
                 }, newAchievements.length * 1000 + 500);
             }
         }
         
-        // ランキング判定
-        if (window.rankingManager?.isHighScore(this.score)) {
+        // ランキング判定（必ず実行する）
+        console.log('スコア:', this.score, 'ハイスコア判定:', window.rankingManager?.isHighScore(this.score));
+        
+        if (window.rankingManager && window.rankingManager.isHighScore(this.score)) {
             document.getElementById('name-input-container').style.display = 'block';
+            // 名前入力フィールドをクリア
+            document.getElementById('player-name').value = '';
+            // フォーカスを当てる（実績通知の後に）
+            setTimeout(() => {
+                document.getElementById('player-name').focus();
+            }, (newAchievements.length + (challengeCompleted ? 1 : 0)) * 1000 + 1000);
         } else {
             document.getElementById('name-input-container').style.display = 'none';
         }
@@ -567,4 +577,10 @@ class Game {
 // ゲームインスタンスの作成
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new Game();
+    
+    // デバッグ：ランキングマネージャーの状態を確認
+    setTimeout(() => {
+        console.log('RankingManager 初期化確認:', window.rankingManager);
+        console.log('現在のランキング:', window.rankingManager?.rankings);
+    }, 1000);
 });

@@ -1,10 +1,10 @@
 class DailyChallenge {
     constructor() {
         this.challenges = [
-            { target: 300, name: '初級チャレンジ', reward: '🌟' },
-            { target: 600, name: '中級チャレンジ', reward: '⭐' },
-            { target: 1000, name: '上級チャレンジ', reward: '✨' },
-            { target: 1500, name: 'マスターチャレンジ', reward: '💫' }
+            { target: 500, name: '初級チャレンジ', reward: '🌟' },
+            { target: 1000, name: '中級チャレンジ', reward: '⭐' },
+            { target: 2000, name: '上級チャレンジ', reward: '✨' },
+            { target: 3000, name: 'マスターチャレンジ', reward: '💫' }
         ];
         this.loadProgress();
     }

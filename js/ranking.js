@@ -45,10 +45,14 @@ class RankingManager {
     }
     
     isHighScore(score) {
+        console.log('isHighScore チェック - スコア:', score, 'ランキング数:', this.rankings.length, '最大:', this.maxRankings);
         if (this.rankings.length < this.maxRankings) {
+            console.log('ランキングに空きがあるため true を返す');
             return true;
         }
-        return score > this.rankings[this.rankings.length - 1].score;
+        const lowestScore = this.rankings[this.rankings.length - 1].score;
+        console.log('最低スコア:', lowestScore, 'ハイスコア判定:', score > lowestScore);
+        return score > lowestScore;
     }
     
     displayRankings() {
