@@ -4,7 +4,10 @@ class UIManager {
             start: document.getElementById('start-screen'),
             game: document.getElementById('game-screen'),
             end: document.getElementById('end-screen'),
-            ranking: document.getElementById('ranking-screen')
+            ranking: document.getElementById('ranking-screen'),
+            achievements: document.getElementById('achievements-screen'),
+            statistics: document.getElementById('statistics-screen'),
+            theme: document.getElementById('theme-screen')
         };
         
         this.init();
@@ -98,6 +101,35 @@ class UIManager {
                 }
             });
         });
+        
+        // 新機能のボタン
+        document.getElementById('achievements-btn')?.addEventListener('click', () => {
+            this.showScreen('achievements');
+            this.displayAchievements();
+        });
+        
+        document.getElementById('stats-btn')?.addEventListener('click', () => {
+            this.showScreen('statistics');
+            this.displayStatistics();
+        });
+        
+        document.getElementById('theme-btn')?.addEventListener('click', () => {
+            this.showScreen('theme');
+            this.displayThemes();
+        });
+        
+        // 戻るボタン
+        document.getElementById('back-from-achievements-btn')?.addEventListener('click', () => {
+            this.showScreen('start');
+        });
+        
+        document.getElementById('back-from-stats-btn')?.addEventListener('click', () => {
+            this.showScreen('start');
+        });
+        
+        document.getElementById('back-from-theme-btn')?.addEventListener('click', () => {
+            this.showScreen('start');
+        });
     }
     
     showScreen(screenName) {
@@ -150,9 +182,48 @@ class UIManager {
             element.textContent = element.dataset.originalText || element.textContent;
         }
     }
+    
+    displayAchievements() {
+        const container = document.getElementById('achievements-list');
+        const countEl = document.getElementById('achievement-count');
+        const totalEl = document.getElementById('achievement-total');
+        
+        if (window.achievementSystem) {
+            container.innerHTML = '';
+            container.appendChild(window.achievementSystem.displayAchievements());
+            countEl.textContent = window.achievementSystem.getUnlockedCount();
+            totalEl.textContent = window.achievementSystem.getTotalCount();
+        }
+    }
+    
+    displayStatistics() {
+        const container = document.getElementById('statistics-content');
+        
+        if (window.statisticsTracker) {
+            container.innerHTML = '';
+            container.appendChild(window.statisticsTracker.displayStatistics());
+        }
+    }
+    
+    displayThemes() {
+        const container = document.getElementById('theme-content');
+        
+        if (window.themeManager) {
+            container.innerHTML = '';
+            container.appendChild(window.themeManager.createThemeSelector());
+        }
+    }
 }
 
 // UIマネージャーのインスタンス作成
 document.addEventListener('DOMContentLoaded', () => {
     window.uiManager = new UIManager();
+    
+    // デイリーチャレンジをスタート画面に表示
+    if (window.dailyChallenge) {
+        const challengePreview = document.getElementById('daily-challenge-preview');
+        if (challengePreview) {
+            challengePreview.appendChild(window.dailyChallenge.displayChallenge());
+        }
+    }
 });

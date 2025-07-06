@@ -14,6 +14,12 @@ class Game {
         this.comboTimeLeft = 0;
         this.inputMethod = 'keyboard'; // 'keyboard' or 'touch'
         
+        // 統計用
+        this.sessionAnswers = [];
+        this.sessionStartTime = null;
+        this.totalAnswers = 0;
+        this.totalReactionTime = 0;
+        
         this.init();
     }
     
@@ -93,6 +99,17 @@ class Game {
         this.isPlaying = true;
         this.lastAnswerTime = Date.now();
         
+        // 統計用リセット
+        this.sessionAnswers = [];
+        this.sessionStartTime = Date.now();
+        this.totalAnswers = 0;
+        this.totalReactionTime = 0;
+        
+        // 統計トラッカーを開始
+        if (window.statisticsTracker) {
+            window.statisticsTracker.startSession();
+        }
+        
         this.generateInitialNumbers();
         this.updateUI();
         
@@ -140,8 +157,23 @@ class Game {
     checkAnswer(answer) {
         const correctAnswer = (this.numbers[0] + this.numbers[1]) % 10;
         const isCorrect = answer === correctAnswer;
+        const reactionTime = Date.now() - this.lastAnswerTime;
         
+        // 統計用に記録
+        if (window.statisticsTracker) {
+            window.statisticsTracker.recordAnswer(
+                this.numbers[0], 
+                this.numbers[1], 
+                answer, 
+                correctAnswer, 
+                reactionTime, 
+                isCorrect
+            );
+        }
+        
+        this.totalAnswers++;
         if (isCorrect) {
+            this.totalReactionTime += reactionTime;
             this.handleCorrectAnswer();
         } else {
             this.handleIncorrectAnswer();
@@ -462,6 +494,40 @@ class Game {
         document.getElementById('max-combo').textContent = this.maxCombo;
         document.getElementById('correct-count').textContent = this.correctCount;
         
+        // 統計を更新
+        if (window.statisticsTracker) {
+            const sessionStats = window.statisticsTracker.endSession(this.score, this.maxCombo);
+        }
+        
+        // 実績システムを更新
+        if (window.achievementSystem) {
+            const gameData = {
+                score: this.score,
+                maxCombo: this.maxCombo,
+                totalAnswers: this.totalAnswers,
+                correctAnswers: this.correctCount,
+                totalReactionTime: this.totalReactionTime
+            };
+            const newAchievements = window.achievementSystem.updateStats(gameData);
+            
+            // 新しい実績を表示
+            newAchievements.forEach((achievement, index) => {
+                setTimeout(() => {
+                    window.achievementSystem.showAchievementNotification(achievement);
+                }, index * 1000);
+            });
+        }
+        
+        // デイリーチャレンジをチェック
+        if (window.dailyChallenge) {
+            const challengeResult = window.dailyChallenge.checkChallenge(this.score);
+            if (challengeResult.completed && challengeResult.firstTime) {
+                setTimeout(() => {
+                    this.showChallengeCompleteNotification(challengeResult.challenge);
+                }, newAchievements.length * 1000 + 500);
+            }
+        }
+        
         // ランキング判定
         if (window.rankingManager?.isHighScore(this.score)) {
             document.getElementById('name-input-container').style.display = 'block';
@@ -471,6 +537,30 @@ class Game {
         
         // タイマー表示リセット
         document.getElementById('timer-display').classList.remove('time-warning', 'time-critical');
+    }
+    
+    showChallengeCompleteNotification(challenge) {
+        const notification = document.createElement('div');
+        notification.className = 'achievement-notification';
+        notification.innerHTML = `
+            <div class="achievement-popup challenge-complete">
+                <h3>🎯 デイリーチャレンジ達成！</h3>
+                <div class="achievement-content">
+                    <span class="achievement-icon">${challenge.reward}</span>
+                    <div>
+                        <h4>${challenge.name}</h4>
+                        <p>目標スコア ${challenge.target} 点を達成しました！</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
     }
 }
 

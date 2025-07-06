@@ -6,6 +6,7 @@
     <title>足し算コンボゲーム</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/features.css">
 </head>
 <body>
     <div id="game-container">
@@ -94,7 +95,15 @@
                 <p>制限時間は30秒</p>
             </div>
             <button id="start-btn" class="main-btn">ゲームスタート</button>
-            <button id="ranking-btn" class="main-btn">ランキング</button>
+            <div class="button-row">
+                <button id="ranking-btn" class="secondary-btn">ランキング</button>
+                <button id="achievements-btn" class="secondary-btn">実績</button>
+            </div>
+            <div class="button-row">
+                <button id="stats-btn" class="secondary-btn">統計</button>
+                <button id="theme-btn" class="secondary-btn">テーマ</button>
+            </div>
+            <div id="daily-challenge-preview"></div>
         </div>
 
         <!-- ゲーム終了画面 -->
@@ -133,6 +142,30 @@
             </div>
             <button id="back-from-ranking-btn" class="main-btn">戻る</button>
         </div>
+        
+        <!-- 実績画面 -->
+        <div id="achievements-screen" class="screen">
+            <h2>🏆 実績</h2>
+            <div id="achievement-progress">
+                <span id="achievement-count">0</span> / <span id="achievement-total">0</span> 解除済み
+            </div>
+            <div id="achievements-list"></div>
+            <button id="back-from-achievements-btn" class="main-btn">戻る</button>
+        </div>
+        
+        <!-- 統計画面 -->
+        <div id="statistics-screen" class="screen">
+            <h2>📊 統計情報</h2>
+            <div id="statistics-content"></div>
+            <button id="back-from-stats-btn" class="main-btn">戻る</button>
+        </div>
+        
+        <!-- テーマ選択画面 -->
+        <div id="theme-screen" class="screen">
+            <h2>🎨 テーマ選択</h2>
+            <div id="theme-content"></div>
+            <button id="back-from-theme-btn" class="main-btn">戻る</button>
+        </div>
     </div>
 
     <script src="js/game.js"></script>
@@ -141,5 +174,9 @@
     <script src="js/combo.js"></script>
     <script src="js/ranking.js"></script>
     <script src="js/sound.js"></script>
+    <script src="js/daily-challenge.js"></script>
+    <script src="js/achievements.js"></script>
+    <script src="js/themes.js"></script>
+    <script src="js/statistics.js"></script>
 </body>
 </html>
