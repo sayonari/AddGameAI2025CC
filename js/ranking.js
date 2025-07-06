@@ -144,10 +144,26 @@ class RankingManager {
     
     async fetchOnlineRankings() {
         const GAS_URL = window.GAS_WEBAPP_URL;
+        
         if (!GAS_URL) {
             throw new Error('GAS URLが設定されていません');
         }
         
+        // fetchが使える場合は優先的に使用（ローカル開発用）
+        if (window.USE_FETCH_INSTEAD_OF_JSONP && window.location.hostname === 'localhost') {
+            try {
+                const response = await fetch(`${GAS_URL}?action=getRankings`);
+                const data = await response.json();
+                if (data.success) {
+                    return data.rankings;
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Fetch error, falling back to JSONP:', error);
+                // JSONPにフォールバック
+            }
+        }
         
         // JSONP用のコールバック関数名を生成
         const callbackName = 'jsonpCallback_' + Date.now();
@@ -165,8 +181,9 @@ class RankingManager {
             
             // スクリプトタグを作成してJSONPリクエスト
             const script = document.createElement('script');
-            script.src = `${GAS_URL}?action=getRankings&callback=${callbackName}`;
-            script.onerror = () => {
+            const scriptUrl = `${GAS_URL}?action=getRankings&callback=${callbackName}`;
+            script.src = scriptUrl;
+            script.onerror = (error) => {
                 delete window[callbackName];
                 script.remove();
                 reject(new Error('Failed to load rankings'));
@@ -210,6 +227,35 @@ class RankingManager {
         if (now - lastSubmit < (config.MIN_SUBMIT_INTERVAL || 30000)) {
             console.error('送信間隔が短すぎます');
             return false;
+        }
+        
+        // ローカル環境でfetchを使用
+        if (window.USE_FETCH_INSTEAD_OF_JSONP && window.location.hostname === 'localhost') {
+            try {
+                const params = new URLSearchParams({
+                    action: 'addScore',
+                    name: name,
+                    score: score,
+                    combo: Math.min(window.game?.maxCombo || 0, config.MAX_COMBO || 100),
+                    inputMethod: window.game?.inputMethod || 'keyboard',
+                    version: config.VERSION || '1.0.0',
+                    timestamp: now
+                });
+                
+                const response = await fetch(`${GAS_URL}?${params.toString()}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.lastSubmitTime = now;
+                    return true;
+                } else {
+                    console.error('スコア送信エラー:', data.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                // JSONPにフォールバック
+            }
         }
         
         // JSONP用のコールバック関数名を生成
