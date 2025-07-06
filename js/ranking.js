@@ -149,6 +149,31 @@ class RankingManager {
             throw new Error('GAS URLが設定されていません');
         }
         
+        // CORSプロキシ経由でfetchを使用（GitHub Pages用）
+        if (window.USE_CORS_PROXY && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            // 複数のプロキシを試す
+            for (const proxy of (window.CORS_PROXIES || [window.CORS_PROXY_URL])) {
+                try {
+                    console.log('Trying CORS proxy:', proxy);
+                    const proxyUrl = proxy + encodeURIComponent(GAS_URL + '?action=getRankings');
+                    const response = await fetch(proxyUrl);
+                    const data = await response.json();
+                    if (data.success) {
+                        console.log('CORS proxy success with:', proxy);
+                        window.CORS_PROXY_URL = proxy; // 成功したプロキシを記憶
+                        return data.rankings;
+                    } else {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+                } catch (error) {
+                    console.error('CORS proxy error with', proxy, ':', error);
+                    continue; // 次のプロキシを試す
+                }
+            }
+            // すべてのプロキシが失敗した場合、JSONPにフォールバック
+            console.log('All CORS proxies failed, falling back to JSONP');
+        }
+        
         // fetchが使える場合は優先的に使用（ローカル開発用）
         if (window.USE_FETCH_INSTEAD_OF_JSONP && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
             try {
@@ -227,6 +252,45 @@ class RankingManager {
         if (now - lastSubmit < (config.MIN_SUBMIT_INTERVAL || 30000)) {
             console.error('送信間隔が短すぎます');
             return false;
+        }
+        
+        // CORSプロキシ経由でfetchを使用（GitHub Pages用）
+        if (window.USE_CORS_PROXY && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            const params = new URLSearchParams({
+                action: 'addScore',
+                name: name,
+                score: score,
+                combo: Math.min(window.game?.maxCombo || 0, config.MAX_COMBO || 100),
+                inputMethod: window.game?.inputMethod || 'keyboard',
+                version: config.VERSION || '1.0.0',
+                timestamp: now
+            });
+            
+            // 複数のプロキシを試す
+            const proxies = window.CORS_PROXIES || [window.CORS_PROXY_URL];
+            for (const proxy of proxies) {
+                try {
+                    console.log('Trying CORS proxy for submit:', proxy);
+                    const proxyUrl = proxy + encodeURIComponent(GAS_URL + '?' + params.toString());
+                    const response = await fetch(proxyUrl);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        console.log('Submit success with proxy:', proxy);
+                        window.CORS_PROXY_URL = proxy; // 成功したプロキシを記憶
+                        this.lastSubmitTime = now;
+                        return true;
+                    } else {
+                        console.error('スコア送信エラー:', data.error);
+                        continue;
+                    }
+                } catch (error) {
+                    console.error('CORS proxy error with', proxy, ':', error);
+                    continue; // 次のプロキシを試す
+                }
+            }
+            // すべてのプロキシが失敗した場合、JSONPにフォールバック
+            console.log('All CORS proxies failed for submit, falling back to JSONP');
         }
         
         // ローカル環境でfetchを使用

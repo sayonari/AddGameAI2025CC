@@ -6,6 +6,16 @@
     // JSONP非対応の場合はfetchを使用するフラグ
     window.USE_FETCH_INSTEAD_OF_JSONP = true;
     
+    // GitHub Pages用：CORSプロキシを使用
+    window.USE_CORS_PROXY = true;
+    // 複数のCORSプロキシを試す
+    window.CORS_PROXIES = [
+        'https://api.allorigins.win/raw?url=',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://corsproxy.io/?'
+    ];
+    window.CORS_PROXY_URL = window.CORS_PROXIES[0];  // デフォルトは最初のプロキシ
+    
     
     // 追加のセキュリティ設定
     window.GAME_CONFIG = {

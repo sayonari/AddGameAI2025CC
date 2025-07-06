@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GAS Test</title>
+</head>
+<body>
+    <h1>GAS URL Test</h1>
+    <button onclick="testGAS()">Test GAS</button>
+    <div id="result"></div>
+    
+    <script>
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwZEsWe5g0QOb_KDe7KPJ-rxluzjyWE6hbCgjtyLjIlFvWGajYvU4df5DHrYnMmGVAj/exec';
+        
+        function testGAS() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            // テスト1: 直接fetchを試す
+            fetch(GAS_URL + '?action=getRankings')
+                .then(response => response.text())
+                .then(text => {
+                    console.log('Fetch response:', text);
+                    resultDiv.innerHTML += '<br>Fetch: ' + text.substring(0, 100) + '...';
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    resultDiv.innerHTML += '<br>Fetch error: ' + error;
+                });
+            
+            // テスト2: JSONPを試す
+            const callbackName = 'testCallback';
+            window[callbackName] = function(data) {
+                console.log('JSONP response:', data);
+                resultDiv.innerHTML += '<br>JSONP: ' + JSON.stringify(data);
+                delete window[callbackName];
+            };
+            
+            const script = document.createElement('script');
+            script.src = GAS_URL + '?action=getRankings&callback=' + callbackName;
+            script.onerror = function() {
+                resultDiv.innerHTML += '<br>JSONP error: Script failed to load';
+            };
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>

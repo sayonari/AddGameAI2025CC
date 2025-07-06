@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct GAS Test</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Direct GAS API Test</h1>
+    <button onclick="testDirect()">Test Direct Fetch</button>
+    <button onclick="testProxy()">Test with Proxy</button>
+    <button onclick="testSubmit()">Test Submit Score</button>
+    <div id="result"></div>
+    
+    <script>
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwZEsWe5g0QOb_KDe7KPJ-rxluzjyWE6hbCgjtyLjIlFvWGajYvU4df5DHrYnMmGVAj/exec';
+        
+        async function testDirect() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>Testing Direct Fetch...</h3>';
+            
+            try {
+                const response = await fetch(GAS_URL + '?action=getRankings');
+                const data = await response.json();
+                console.log('Direct fetch success:', data);
+                resultDiv.innerHTML = '<h3 style="color:green">Success!</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Direct fetch error:', error);
+                resultDiv.innerHTML = '<h3 style="color:red">Error!</h3><pre>' + error.toString() + '</pre>';
+            }
+        }
+        
+        async function testProxy() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>Testing with Proxy...</h3>';
+            
+            const proxies = [
+                'https://api.allorigins.win/raw?url=',
+                'https://corsproxy.io/?'
+            ];
+            
+            for (const proxy of proxies) {
+                try {
+                    resultDiv.innerHTML += '<p>Trying proxy: ' + proxy + '</p>';
+                    const proxyUrl = proxy + encodeURIComponent(GAS_URL + '?action=getRankings');
+                    const response = await fetch(proxyUrl);
+                    const data = await response.json();
+                    console.log('Proxy success with', proxy, ':', data);
+                    resultDiv.innerHTML += '<h3 style="color:green">Success with ' + proxy + '!</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    return;
+                } catch (error) {
+                    console.error('Proxy error with', proxy, ':', error);
+                    resultDiv.innerHTML += '<p style="color:red">Failed with ' + proxy + ': ' + error.toString() + '</p>';
+                }
+            }
+        }
+        
+        async function testSubmit() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>Testing Submit...</h3>';
+            
+            const params = new URLSearchParams({
+                action: 'addScore',
+                name: 'テスト太郎',
+                score: 123,
+                combo: 5,
+                inputMethod: 'keyboard'
+            });
+            
+            try {
+                const proxy = 'https://api.allorigins.win/raw?url=';
+                const proxyUrl = proxy + encodeURIComponent(GAS_URL + '?' + params.toString());
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                console.log('Submit success:', data);
+                resultDiv.innerHTML = '<h3 style="color:green">Submit Success!</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Submit error:', error);
+                resultDiv.innerHTML = '<h3 style="color:red">Submit Error!</h3><pre>' + error.toString() + '</pre>';
+            }
+        }
+        
+        // 自動実行
+        window.onload = function() {
+            console.log('Current URL:', window.location.href);
+            console.log('Hostname:', window.location.hostname);
+            console.log('Protocol:', window.location.protocol);
+        };
+    </script>
+</body>
+</html>
