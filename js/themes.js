@@ -92,7 +92,7 @@ class ThemeManager {
     createThemeSelector() {
         const selector = document.createElement('div');
         selector.className = 'theme-selector';
-        selector.innerHTML = '<h3>🎨 テーマ選択</h3>';
+        selector.innerHTML = '';
         
         const grid = document.createElement('div');
         grid.className = 'theme-grid';

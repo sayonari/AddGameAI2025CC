@@ -193,8 +193,6 @@ class StatisticsTracker {
         const totalTime = this.formatTime(this.lifetimeStats.totalPlayTime);
         
         container.innerHTML = `
-            <h3>📊 統計情報</h3>
-            
             <div class="stats-grid">
                 <div class="stat-card">
                     <h4>プレイ統計</h4>
