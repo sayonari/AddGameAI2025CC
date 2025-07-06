@@ -12,20 +12,30 @@ class ComboManager {
     }
     
     calculateScore(baseScore, combo, remainingTime) {
-        // 提供されたコードと同じ計算式
-        // score = 1 + combo * (remainingTime/100)^2
-        // remainingTimeは0-800msの範囲
+        // 改良されたスコア計算式
+        // 基本点 + コンボボーナス + タイムボーナス
         const absCombo = Math.abs(combo);
         
         if (absCombo === 0) {
             return baseScore;
         }
         
-        // 残り時間を100で割って2乗
-        const timeBonus = Math.pow(remainingTime / 100, 2);
+        // 基本点（コンボ数に応じて増加）
+        const basePoints = 10 + (absCombo - 1) * 5;
         
-        // スコア計算: 1 + コンボ数 × (残り時間/100)²
-        const score = Math.round(1 + absCombo * timeBonus);
+        // タイムボーナス（残り時間が多いほど高い）
+        // remainingTimeは0-800msの範囲
+        const timeRatio = remainingTime / 800; // 0-1の範囲に正規化
+        const timeBonus = Math.round(basePoints * timeRatio);
+        
+        // コンボボーナス（コンボが高いほど倍率が上がる）
+        let comboMultiplier = 1;
+        if (absCombo >= 20) comboMultiplier = 3;
+        else if (absCombo >= 10) comboMultiplier = 2;
+        else if (absCombo >= 5) comboMultiplier = 1.5;
+        
+        // 最終スコア計算
+        const score = Math.round((basePoints + timeBonus) * comboMultiplier);
         
         return score;
     }
