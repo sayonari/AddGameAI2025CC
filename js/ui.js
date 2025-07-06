@@ -51,11 +51,15 @@ class UIManager {
                 // ローカルランキングに追加
                 window.rankingManager.addScore(name, window.game.score);
                 
-                // オンラインランキングに送信
+                // オンラインランキングに送信（エラーが発生しても続行）
                 if (window.GAS_WEBAPP_URL) {
                     try {
-                        await window.rankingManager.submitOnlineScore(name, window.game.score);
-                        this.showNotification('スコアをオンラインランキングに登録しました！', 'success');
+                        const success = await window.rankingManager.submitOnlineScore(name, window.game.score);
+                        if (success) {
+                            this.showNotification('スコアをオンラインランキングに登録しました！', 'success');
+                        } else {
+                            this.showNotification('オンライン登録に失敗しました（ローカルには保存されました）', 'error');
+                        }
                     } catch (error) {
                         console.error('オンライン登録エラー:', error);
                         this.showNotification('オンライン登録に失敗しました（ローカルには保存されました）', 'error');

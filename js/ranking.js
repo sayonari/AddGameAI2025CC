@@ -148,6 +148,7 @@ class RankingManager {
             throw new Error('GAS URLが設定されていません');
         }
         
+        
         // JSONP用のコールバック関数名を生成
         const callbackName = 'jsonpCallback_' + Date.now();
         
@@ -167,7 +168,13 @@ class RankingManager {
             script.src = `${GAS_URL}?action=getRankings&callback=${callbackName}`;
             script.onerror = () => {
                 delete window[callbackName];
+                script.remove();
                 reject(new Error('Failed to load rankings'));
+            };
+            
+            // 成功時のクリーンアップ
+            script.onload = () => {
+                setTimeout(() => script.remove(), 100);
             };
             
             document.body.appendChild(script);
@@ -239,8 +246,14 @@ class RankingManager {
                 script.src = `${GAS_URL}?${params.toString()}`;
                 script.onerror = () => {
                     delete window[callbackName];
+                    script.remove();
                     console.error('スクリプト読み込みエラー');
                     resolve(false);
+                };
+                
+                // 成功時のクリーンアップ
+                script.onload = () => {
+                    setTimeout(() => script.remove(), 100);
                 };
                 
                 document.body.appendChild(script);
