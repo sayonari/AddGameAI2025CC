@@ -143,19 +143,44 @@ class RankingManager {
     }
     
     async fetchOnlineRankings() {
-        const GAS_URL = window.GAS_WEBAPP_URL; // index.htmlで設定
+        const GAS_URL = window.GAS_WEBAPP_URL;
         if (!GAS_URL) {
             throw new Error('GAS URLが設定されていません');
         }
         
-        const response = await fetch(`${GAS_URL}?action=getRankings`);
-        const data = await response.json();
+        // JSONP用のコールバック関数名を生成
+        const callbackName = 'jsonpCallback_' + Date.now();
         
-        if (data.success) {
-            return data.rankings;
-        } else {
-            throw new Error(data.error || 'Unknown error');
-        }
+        return new Promise((resolve, reject) => {
+            // グローバルコールバック関数を定義
+            window[callbackName] = (data) => {
+                delete window[callbackName]; // クリーンアップ
+                if (data.success) {
+                    resolve(data.rankings);
+                } else {
+                    reject(new Error(data.error || 'Unknown error'));
+                }
+            };
+            
+            // スクリプトタグを作成してJSONPリクエスト
+            const script = document.createElement('script');
+            script.src = `${GAS_URL}?action=getRankings&callback=${callbackName}`;
+            script.onerror = () => {
+                delete window[callbackName];
+                reject(new Error('Failed to load rankings'));
+            };
+            
+            document.body.appendChild(script);
+            
+            // タイムアウト処理
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    script.remove();
+                    reject(new Error('Request timeout'));
+                }
+            }, 10000); // 10秒タイムアウト
+        });
     }
     
     async submitOnlineScore(name, score) {
@@ -180,29 +205,61 @@ class RankingManager {
             return false;
         }
         
-        try {
-            const params = new URLSearchParams({
-                action: 'addScore',
-                name: name,
-                score: score,
-                combo: Math.min(window.game?.maxCombo || 0, config.MAX_COMBO || 100),
-                inputMethod: window.game?.inputMethod || 'keyboard',
-                version: config.VERSION || '1.0.0',
-                timestamp: now
-            });
-            
-            const response = await fetch(`${GAS_URL}?${params.toString()}`);
-            const data = await response.json();
-            
-            if (data.success) {
-                this.lastSubmitTime = now;
+        // JSONP用のコールバック関数名を生成
+        const callbackName = 'jsonpSubmit_' + Date.now();
+        
+        return new Promise((resolve) => {
+            try {
+                // グローバルコールバック関数を定義
+                window[callbackName] = (data) => {
+                    delete window[callbackName];
+                    if (data.success) {
+                        this.lastSubmitTime = now;
+                        resolve(true);
+                    } else {
+                        console.error('スコア送信エラー:', data.error);
+                        resolve(false);
+                    }
+                };
+                
+                // パラメータを作成
+                const params = new URLSearchParams({
+                    action: 'addScore',
+                    name: name,
+                    score: score,
+                    combo: Math.min(window.game?.maxCombo || 0, config.MAX_COMBO || 100),
+                    inputMethod: window.game?.inputMethod || 'keyboard',
+                    version: config.VERSION || '1.0.0',
+                    timestamp: now,
+                    callback: callbackName
+                });
+                
+                // スクリプトタグを作成
+                const script = document.createElement('script');
+                script.src = `${GAS_URL}?${params.toString()}`;
+                script.onerror = () => {
+                    delete window[callbackName];
+                    console.error('スクリプト読み込みエラー');
+                    resolve(false);
+                };
+                
+                document.body.appendChild(script);
+                
+                // タイムアウト処理
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        script.remove();
+                        console.error('リクエストタイムアウト');
+                        resolve(false);
+                    }
+                }, 10000);
+                
+            } catch (error) {
+                console.error('オンラインスコア送信エラー:', error);
+                resolve(false);
             }
-            
-            return data.success;
-        } catch (error) {
-            console.error('オンラインスコア送信エラー:', error);
-            return false;
-        }
+        });
     }
     
     escapeHtml(text) {

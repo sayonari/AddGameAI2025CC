@@ -11,8 +11,16 @@ class UIManager {
     }
     
     init() {
-        this.setupNavigationListeners();
-        this.showScreen('start');
+        // 初期状態で全ての画面を非表示にする
+        Object.values(this.screens).forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        // iOS Safariの初期レンダリング問題対策
+        setTimeout(() => {
+            this.setupNavigationListeners();
+            this.showScreen('start');
+        }, 100);
     }
     
     setupNavigationListeners() {

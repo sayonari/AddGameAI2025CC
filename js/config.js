@@ -2,7 +2,7 @@
 (function() {
     // 難読化された設定
     // TODO: 新しいGAS URLのIDを下記の_0x4e2a[4]に設定してください
-    const _0x4e2a = ['https://','script.google','.com/','macros/s/','AKfycbxMBS0AqU7L-xN-kvoiTyJyAPNccaGqRvv3J9MHtFrrikG0Xs8C23fl_4pEGpjHGYdl','/exec'];
+    const _0x4e2a = ['https://','script.google','.com/','macros/s/','AKfycbycfGXSn22xjQ8fz53T8TFDr-5kiZWOXfXKhUdHjTnMBI1Aw1I0_QQ9P8yB9g1i72Jp','/exec'];
     const _0x3f5b = function(i) { return _0x4e2a[i]; };
     
     // URLを組み立て（簡単な難読化）
