@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSONP Test</title>
+</head>
+<body>
+    <h1>JSONP Test for GitHub Pages</h1>
+    <button onclick="testJSONP()">Test JSONP</button>
+    <div id="result"></div>
+    
+    <script>
+        function testJSONP() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing JSONP...';
+            
+            // JSONPテスト
+            const callbackName = 'testCallback_' + Date.now();
+            
+            window[callbackName] = function(data) {
+                console.log('JSONP Success:', data);
+                resultDiv.innerHTML = '<h3>Success!</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                delete window[callbackName];
+                document.getElementById('testScript').remove();
+            };
+            
+            const script = document.createElement('script');
+            script.id = 'testScript';
+            script.src = 'https://script.google.com/macros/s/AKfycbwZEsWe5g0QOb_KDe7KPJ-rxluzjyWE6hbCgjtyLjIlFvWGajYvU4df5DHrYnMmGVAj/exec?action=getRankings&callback=' + callbackName;
+            
+            script.onerror = function(e) {
+                console.error('JSONP Error:', e);
+                resultDiv.innerHTML = '<h3 style="color:red">Error!</h3>Script failed to load. Check console for details.';
+                delete window[callbackName];
+            };
+            
+            // タイムアウト設定
+            setTimeout(function() {
+                if (window[callbackName]) {
+                    resultDiv.innerHTML = '<h3 style="color:orange">Timeout!</h3>Request timed out after 10 seconds.';
+                    delete window[callbackName];
+                    document.getElementById('testScript')?.remove();
+                }
+            }, 10000);
+            
+            document.body.appendChild(script);
+        }
+        
+        // 自動実行
+        window.onload = function() {
+            console.log('Current URL:', window.location.href);
+            console.log('Hostname:', window.location.hostname);
+        };
+    </script>
+</body>
+</html>

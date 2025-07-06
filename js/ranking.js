@@ -150,7 +150,7 @@ class RankingManager {
         }
         
         // fetchが使える場合は優先的に使用（ローカル開発用）
-        if (window.USE_FETCH_INSTEAD_OF_JSONP && window.location.hostname === 'localhost') {
+        if (window.USE_FETCH_INSTEAD_OF_JSONP && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
             try {
                 const response = await fetch(`${GAS_URL}?action=getRankings`);
                 const data = await response.json();
@@ -230,7 +230,7 @@ class RankingManager {
         }
         
         // ローカル環境でfetchを使用
-        if (window.USE_FETCH_INSTEAD_OF_JSONP && window.location.hostname === 'localhost') {
+        if (window.USE_FETCH_INSTEAD_OF_JSONP && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
             try {
                 const params = new URLSearchParams({
                     action: 'addScore',
