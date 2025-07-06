@@ -218,6 +218,7 @@
     padding: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     min-width: 300px;
+    color: #333; /* 文字色を黒に設定 */
 }
 
 .achievement-popup h3 {
@@ -225,9 +226,32 @@
     color: #4CAF50;
 }
 
+.achievement-popup h4 {
+    color: #333; /* タイトルの文字色を黒に */
+    margin: 0 0 5px 0;
+}
+
+.achievement-popup p {
+    color: #666; /* 説明文の文字色をグレーに */
+    margin: 0;
+}
+
 .achievement-content {
     display: flex;
     align-items: center;
+}
+
+/* デイリーチャレンジ達成通知も同様に修正 */
+.achievement-popup.challenge-complete h3 {
+    color: #ff9800; /* オレンジ色 */
+}
+
+.achievement-popup.challenge-complete h4 {
+    color: #333;
+}
+
+.achievement-popup.challenge-complete p {
+    color: #666;
 }
 
 .achievement-notification.fade-out {
